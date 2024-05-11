@@ -10,7 +10,7 @@ export default function Login({ navigation }) {
 
   const handleLogin = () => {
     if (email === 'admin@gmail.com' && password === 'admin') {
-      navigation.navigate('Menu');
+      navigation.navigate('Menu'); // Aquí se navega a la pantalla del menú
     } else {
       Alert.alert('Error', 'Correo electrónico o contraseña incorrectos');
     }
