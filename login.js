@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Alert, Dimensions } from 'react-native';
-import { AntDesign } from '@expo/vector-icons'; // Importar el icono de persona de AntDesign
+import { AntDesign } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -10,7 +10,7 @@ export default function Login({ navigation }) {
 
   const handleLogin = () => {
     if (email === 'admin@gmail.com' && password === 'admin') {
-      navigation.navigate('Menu'); // Aquí se navega a la pantalla del menú
+      navigation.navigate('MenuDrawer'); // Navega a MenuDrawer
     } else {
       Alert.alert('Error', 'Correo electrónico o contraseña incorrectos');
     }
@@ -47,16 +47,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   input: {
-    width: windowWidth * 0.8, // Ancho del cuadro de texto
-    height: 40, // Altura del cuadro de texto
-    fontSize: 16, // Tamaño de la fuente
-    padding: 8, // Relleno interno
-    marginBottom: 20, // Margen inferior
-    borderWidth: 1, // Ancho del borde
-    borderColor: '#ccc', // Color del borde
-    borderRadius: 5, // Radio de los bordes
+    width: windowWidth * 0.8,
+    height: 40,
+    fontSize: 16,
+    padding: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
   lockIcon: {
-    marginBottom: 20, // Espacio adicional debajo del icono
+    marginBottom: 20,
   },
 });

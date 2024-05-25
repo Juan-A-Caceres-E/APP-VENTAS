@@ -1,24 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function Menu({ navigation }) {
   const handleSellPress = () => {
-    // Lógica para manejar el botón "Vender"
+    navigation.navigate('Sell');
   };
 
   const handleProductsPress = () => {
-    // Lógica para manejar el botón "Productos"
+    navigation.navigate('Products');
   };
 
   const handlePaymentMethodPress = () => {
-    // Lógica para manejar el botón "Método de Pago"
+    navigation.navigate('PaymentMethod');
   };
 
   const handleCompanySettingsPress = () => {
-    // Lógica para manejar el botón "Configuración Empresa"
+    navigation.navigate('CompanySettings');
   };
 
   return (
