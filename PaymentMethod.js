@@ -90,10 +90,12 @@ export default function PaymentMethod() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Editar {selectedMethod}</Text>
             <TextInput
+              keyboardType="numeric"
               style={styles.input}
               placeholder="Número de teléfono"
               value={phone}
               onChangeText={setPhone}
+              editable={true}
             />
             <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
               <Text style={styles.imagePickerButtonText}>Seleccionar nueva imagen QR</Text>
