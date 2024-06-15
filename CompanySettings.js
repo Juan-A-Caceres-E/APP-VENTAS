@@ -62,6 +62,7 @@ export default function CompanySettings({ isDarkMode }) {
           editable={isEditing}
           value={companyInfo.ruc}
           onChangeText={(text) => handleChange('ruc', text)}
+          keyboardType="numeric"
         />
       </View>
       <View style={styles.inputContainer}>
@@ -71,6 +72,7 @@ export default function CompanySettings({ isDarkMode }) {
           editable={isEditing}
           value={companyInfo.phone}
           onChangeText={(text) => handleChange('phone', text)}
+          keyboardType="numeric"
         />
       </View>
       <View style={styles.inputContainer}>

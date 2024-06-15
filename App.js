@@ -4,7 +4,7 @@ import { StyleSheet, View, Button, Dimensions } from 'react-native';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Login from './Login';
+import Login from './login';
 import Menu from './Menu';
 import Sell from './Sell';
 import Products from './Products';
