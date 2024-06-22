@@ -72,11 +72,14 @@ export default function Products() {
             data={filteredProducts}
             defaultValue={query}
             onChangeText={(text) => setQuery(text)}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleProductSelect(item)}>
-                <Text style={styles.itemText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
+            flatListProps={{
+              keyExtractor: (_, item) => item,
+              renderItem: ({ item }) => (
+                <TouchableOpacity onPress={() => handleProductSelect(item)}>
+                  <Text style={styles.itemText}>{item.name}</Text>
+                </TouchableOpacity>
+              ),
+            }}
             inputContainerStyle={styles.autocompleteContainer}
             listStyle={styles.autocompleteList}
           />
