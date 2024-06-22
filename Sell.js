@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, Modal } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import RNPickerSelect from 'react-native-picker-select';
@@ -14,18 +14,28 @@ const initialProducts = [
 export default function Sell() {
   const [query, setQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('');
   const [price, setPrice] = useState('');
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [newItemsCount, setNewItemsCount] = useState(0);
 
-  const filteredProducts = query
+  useEffect(() => {
+    filterProducts();
+  }, [query]);
+
+  const filterProducts = () => {
+    const filteredProd = query
     ? initialProducts.filter((product) =>
         product.name.toLowerCase().includes(query.toLowerCase())
       )
     : initialProducts; // Mostrar todos los productos si no hay consulta
+    setFilteredProducts(filteredProd);
+  };
+    
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -43,12 +53,18 @@ export default function Sell() {
         price,
       };
       setCart([...cart, newItem]);
+      setNewItemsCount(newItemsCount + 1);
       setQuery('');
       setSelectedProduct(null);
       setQuantity('');
       setUnit('');
       setPrice('');
     }
+  };
+
+  const handleOpenCart = () => {
+    setShowCart(true);
+    setNewItemsCount(0); // Restablecer el recuento de notificaciones cuando se abre el carrito
   };
 
   return (
@@ -71,11 +87,14 @@ export default function Sell() {
             data={filteredProducts}
             defaultValue={query}
             onChangeText={(text) => setQuery(text)}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleProductSelect(item)}>
-                <Text style={styles.itemText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
+            flatListProps={{
+              keyExtractor: (_, item) => item,
+              renderItem: ({ item }) => (
+                <TouchableOpacity onPress={() => handleProductSelect(item)}>
+                  <Text style={styles.itemText}>{item.name}</Text>
+                </TouchableOpacity>
+              ),
+            }}
             inputContainerStyle={styles.autocompleteContainer}
             listStyle={styles.autocompleteList}
           />
@@ -118,8 +137,13 @@ export default function Sell() {
         <Text style={styles.buttonText}>Agregar al Carrito</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.cartButton} onPress={() => setShowCart(true)}>
+      <TouchableOpacity style={styles.cartButton} onPress={handleOpenCart}>
         <Text style={styles.cartButtonText}>🛒</Text>
+        {newItemsCount > 0 && (
+          <View style={styles.notification}>
+            <Text style={styles.notificationText}>{newItemsCount}</Text>
+          </View>
+        )}
       </TouchableOpacity>
 
       <Modal visible={showCart} animationType="slide">
@@ -219,6 +243,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
+
+    color: '#333',
+    fontWeight: 'bold',
   },
   cartItem: {
     flexDirection: 'column',
@@ -228,10 +255,14 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 5,
     marginVertical: 5,
+
+    backgroundColor: '#fff',
   },
   cartText: {
     fontSize: 16,
     marginBottom: 5,
+
+    color: '#333',
   },
   modalContainer: {
     flex: 1,
@@ -243,6 +274,24 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
+
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  notification: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 5,
+    minWidth: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 
