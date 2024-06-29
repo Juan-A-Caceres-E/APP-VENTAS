@@ -1,23 +1,32 @@
-import React, { useState, useEffect  } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, Modal } from 'react-native';
-import Autocomplete from 'react-native-autocomplete-input';
-import RNPickerSelect from 'react-native-picker-select';
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  Alert,
+} from "react-native";
+import Autocomplete from "react-native-autocomplete-input";
+import RNPickerSelect from "react-native-picker-select";
 
 const initialProducts = [
-  { name: 'Leche', defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
-  { name: 'Azucar', defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
-  { name: 'Galletas', defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
-  { name: 'Limon', defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
-  { name: 'Harina', defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
+  { name: "Leche", defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
+  { name: "Azucar", defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
+  { name: "Galletas", defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
+  { name: "Limon", defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
+  { name: "Harina", defaultPrice: (Math.random() * 20 + 10).toFixed(2) },
 ];
 
 export default function Sell() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [quantity, setQuantity] = useState('');
-  const [unit, setUnit] = useState('');
-  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("");
+  const [price, setPrice] = useState("");
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -29,13 +38,12 @@ export default function Sell() {
 
   const filterProducts = () => {
     const filteredProd = query
-    ? initialProducts.filter((product) =>
-        product.name.toLowerCase().includes(query.toLowerCase())
-      )
-    : initialProducts; // Mostrar todos los productos si no hay consulta
+      ? initialProducts.filter((product) =>
+          product.name.toLowerCase().includes(query.toLowerCase())
+        )
+      : initialProducts; // Mostrar todos los productos si no hay consulta
     setFilteredProducts(filteredProd);
   };
-    
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
@@ -54,17 +62,44 @@ export default function Sell() {
       };
       setCart([...cart, newItem]);
       setNewItemsCount(newItemsCount + 1);
-      setQuery('');
+      setQuery("");
       setSelectedProduct(null);
-      setQuantity('');
-      setUnit('');
-      setPrice('');
+      setQuantity("");
+      setUnit("");
+      setPrice("");
     }
   };
 
   const handleOpenCart = () => {
     setShowCart(true);
     setNewItemsCount(0); // Restablecer el recuento de notificaciones cuando se abre el carrito
+  };
+
+  const handleSellCart = () => {
+    Alert.alert(
+      "Confirmación de Venta",
+      "¿Está seguro de que desea realizar la venta?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            // Aquí puedes realizar la lógica para procesar la venta del carrito
+            setCart([]);
+            setShowCart(false);
+            // Mostrar el mensaje de venta exitosa
+            Alert.alert(
+              "Venta Exitosa",
+              "✅ La venta se ha realizado con éxito.",
+              [{ text: "OK" }]
+            );
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -74,7 +109,7 @@ export default function Sell() {
       {/* Botón para abrir el modal de búsqueda de productos */}
       <TouchableOpacity onPress={() => setShowProductModal(true)}>
         <View style={styles.input}>
-          <Text>{query || 'Buscar producto...'}</Text>
+          <Text>{query || "Buscar producto..."}</Text>
         </View>
       </TouchableOpacity>
 
@@ -99,7 +134,10 @@ export default function Sell() {
             listStyle={styles.autocompleteList}
           />
 
-          <TouchableOpacity style={styles.button} onPress={() => setShowProductModal(false)}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setShowProductModal(false)}
+          >
             <Text style={styles.buttonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
@@ -116,12 +154,12 @@ export default function Sell() {
       <RNPickerSelect
         style={pickerSelectStyles}
         onValueChange={(value) => setUnit(value)}
-        placeholder={{ label: 'Selecciona unidad', value: null }}
+        placeholder={{ label: "Selecciona unidad", value: null }}
         items={[
-          { label: 'kg', value: 'kg' },
-          { label: 'g', value: 'g' },
-          { label: 'unidad', value: 'unidad' },
-          { label: 'litro', value: 'litro' },
+          { label: "kg", value: "kg" },
+          { label: "g", value: "g" },
+          { label: "unidad", value: "unidad" },
+          { label: "litro", value: "litro" },
         ]}
       />
 
@@ -155,12 +193,20 @@ export default function Sell() {
             renderItem={({ item }) => (
               <View style={styles.cartItem}>
                 <Text style={styles.cartText}>{item.product}</Text>
-                <Text style={styles.cartText}>{item.quantity} {item.unit}</Text>
+                <Text style={styles.cartText}>
+                  {item.quantity} {item.unit}
+                </Text>
                 <Text style={styles.cartText}>${item.price}</Text>
               </View>
             )}
           />
-          <TouchableOpacity style={styles.button} onPress={() => setShowCart(false)}>
+          <TouchableOpacity style={styles.button} onPress={handleSellCart}>
+            <Text style={styles.buttonText}>Vender</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setShowCart(false)}
+          >
             <Text style={styles.buttonText}>Cerrar</Text>
           </TouchableOpacity>
         </View>
@@ -173,37 +219,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f9f9f9',
+    justifyContent: "center",
+    backgroundColor: "#f9f9f9",
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   autocompleteContainer: {
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 5,
-    width: '100%',
+    width: "100%",
   },
   autocompleteList: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
-    width: '100%',
+    width: "100%",
     maxHeight: 200,
     zIndex: 2,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 5,
   },
   itemText: {
@@ -211,86 +257,82 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
     padding: 10,
     marginTop: 10,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 5,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
   cartButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: '#ffa500',
+    backgroundColor: "#ffa500",
     borderRadius: 30,
     padding: 15,
   },
   cartButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
   },
   cartModal: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f9f9f9',
+    justifyContent: "center",
+    backgroundColor: "#f9f9f9",
   },
   cartTitle: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
-
-    color: '#333',
-    fontWeight: 'bold',
+    textAlign: "center",
+    color: "#333",
+    fontWeight: "bold",
   },
   cartItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    flexDirection: "column",
+    justifyContent: "space-between",
     padding: 15,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 5,
     marginVertical: 5,
-
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   cartText: {
     fontSize: 16,
     marginBottom: 5,
-
-    color: '#333',
+    color: "#333",
   },
   modalContainer: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
   modalTitle: {
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
-
-    color: '#333',
-    fontWeight: 'bold',
+    textAlign: "center",
+    color: "#333",
+    fontWeight: "bold",
   },
   notification: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     right: 0,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 10,
     padding: 5,
     minWidth: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   notificationText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
   },
 });
@@ -298,14 +340,14 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
   },
   inputAndroid: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
