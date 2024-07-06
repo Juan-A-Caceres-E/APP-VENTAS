@@ -31,6 +31,9 @@ export default function Sell() {
   const [showCart, setShowCart] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [newItemsCount, setNewItemsCount] = useState(0);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showTotalModal, setShowTotalModal] = useState(false);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     filterProducts();
@@ -41,7 +44,7 @@ export default function Sell() {
       ? initialProducts.filter((product) =>
           product.name.toLowerCase().includes(query.toLowerCase())
         )
-      : initialProducts; // Mostrar todos los productos si no hay consulta
+      : initialProducts;
     setFilteredProducts(filteredProd);
   };
 
@@ -49,7 +52,7 @@ export default function Sell() {
     setSelectedProduct(product);
     setQuery(product.name);
     setPrice(product.defaultPrice);
-    setShowProductModal(false); // Cierra el modal después de seleccionar el producto
+    setShowProductModal(false);
   };
 
   const handleAddToCart = () => {
@@ -72,48 +75,35 @@ export default function Sell() {
 
   const handleOpenCart = () => {
     setShowCart(true);
-    setNewItemsCount(0); // Restablecer el recuento de notificaciones cuando se abre el carrito
+    setNewItemsCount(0);
+  };
+
+  const handleConfirmSell = () => {
+    const totalAmount = cart.reduce((acc, item) => acc + parseFloat(item.price), 0);
+    setTotal(totalAmount);
+    setShowCart(false);
+    setShowTotalModal(true);
   };
 
   const handleSellCart = () => {
-    Alert.alert(
-      "Confirmación de Venta",
-      "¿Está seguro de que desea realizar la venta?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            // Aquí puedes realizar la lógica para procesar la venta del carrito
-            setCart([]);
-            setShowCart(false);
-            // Mostrar el mensaje de venta exitosa
-            Alert.alert(
-              "Venta Exitosa",
-              "✅ La venta se ha realizado con éxito.",
-              [{ text: "OK" }]
-            );
-          },
-        },
-      ]
-    );
+    setShowConfirmModal(true);
+  };
+
+  const handlePrintReceipt = () => {
+    // Aquí puedes agregar la lógica para imprimir la boleta.
+    Alert.alert("Boleta de venta", "Imprimiendo boleta de venta...");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pantalla de Vender</Text>
 
-      {/* Botón para abrir el modal de búsqueda de productos */}
       <TouchableOpacity onPress={() => setShowProductModal(true)}>
         <View style={styles.input}>
           <Text>{query || "Buscar producto..."}</Text>
         </View>
       </TouchableOpacity>
 
-      {/* Modal para la búsqueda y selección del producto */}
       <Modal visible={showProductModal} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Seleccionar Producto</Text>
@@ -211,6 +201,50 @@ export default function Sell() {
           </TouchableOpacity>
         </View>
       </Modal>
+
+      <Modal visible={showConfirmModal} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Confirmación de Venta</Text>
+          <Text>¿Está seguro de que desea realizar la venta?</Text>
+          <View style={styles.modalButtons}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setShowConfirmModal(false)}
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleConfirmSell}
+            >
+              <Text style={styles.buttonText}>Sí</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showTotalModal} animationType="slide">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Mi Empresa S.A.</Text>
+          <Text style={styles.modalSubTitle}>Telf: 123-456-7890</Text>
+          <Text style={styles.modalSubTitle}>Direc: Calle Falsa 123</Text>
+          <Text style={styles.modalSubTitle}>Fecha de emisión: 06/07/2024</Text>
+          <Text style={styles.modalHeader}>BOLETA DE VENTA</Text>
+          <Text style={styles.totalText}>Total a Pagar: ${total.toFixed(2)}</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handlePrintReceipt}
+          >
+            <Text style={styles.buttonText}>Imprimir Boleta</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setShowTotalModal(false)}
+          >
+            <Text style={styles.buttonText}>Cerrar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -236,30 +270,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   autocompleteContainer: {
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    width: "100%",
+    borderWidth: 0,
   },
   autocompleteList: {
-    position: "absolute",
-    top: 40,
-    width: "100%",
-    maxHeight: 200,
-    zIndex: 2,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
+    borderWidth: 0,
   },
   itemText: {
-    fontSize: 18,
-    padding: 5,
+    padding: 10,
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#4CAF50",
     padding: 10,
-    marginTop: 10,
+    marginVertical: 10,
     alignItems: "center",
     borderRadius: 5,
   },
@@ -269,15 +291,29 @@ const styles = StyleSheet.create({
   },
   cartButton: {
     position: "absolute",
-    bottom: 20,
+    top: 40,
     right: 20,
-    backgroundColor: "#ffa500",
-    borderRadius: 30,
-    padding: 15,
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 50,
   },
   cartButtonText: {
     color: "white",
     fontSize: 24,
+  },
+  notification: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    borderRadius: 10,
+    padding: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notificationText: {
+    color: "white",
+    fontSize: 12,
   },
   cartModal: {
     flex: 1,
@@ -289,51 +325,45 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     textAlign: "center",
-    color: "#333",
-    fontWeight: "bold",
   },
   cartItem: {
-    flexDirection: "column",
+    flexDirection: "row",
     justifyContent: "space-between",
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
-    marginVertical: 5,
-    backgroundColor: "#fff",
+    paddingVertical: 10,
   },
   cartText: {
     fontSize: 16,
-    marginBottom: 5,
-    color: "#333",
   },
   modalContainer: {
     flex: 1,
-    padding: 20,
     justifyContent: "center",
-    backgroundColor: "#fff",
+    alignItems: "center",
+    padding: 20,
   },
   modalTitle: {
     fontSize: 24,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  modalSubTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  modalHeader: {
+    fontSize: 20,
     marginBottom: 20,
     textAlign: "center",
-    color: "#333",
-    fontWeight: "bold",
   },
-  notification: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    backgroundColor: "red",
-    borderRadius: 10,
-    padding: 5,
-    minWidth: 20,
-    justifyContent: "center",
-    alignItems: "center",
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
-  notificationText: {
-    color: "white",
-    fontSize: 12,
+  totalText: {
+    fontSize: 24,
+    marginBottom: 20,
+    textAlign: "center",
   },
 });
 
@@ -344,6 +374,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
+    justifyContent: "center",
   },
   inputAndroid: {
     height: 40,
@@ -351,5 +382,6 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 1,
     marginVertical: 10,
     paddingHorizontal: 10,
+    justifyContent: "center",
   },
 });
